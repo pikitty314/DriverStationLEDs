@@ -46,7 +46,7 @@ def getSendableMessage():
     is_red = is_red_sub.get()
     auton_winner = auton_winner_sub.get()
     
-    return f"{int(match_time) if match_time >= 0 else 0:03d}{1 if is_red else 0}{1 if auton_winner=="R" else 0}"
+    return f"{1 if is_red else 0}{1 if auton_winner=="R" else 0}{int(match_time) if match_time >= 0 else 0:03d}"
 
 
 while True:
