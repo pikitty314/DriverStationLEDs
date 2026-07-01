@@ -2,6 +2,7 @@ import board
 import neopixel
 import time
 import random
+import usb_cdc
 
 ## NOTE: Ticks refer to board time, time refers to match time
 
@@ -29,9 +30,27 @@ OFF = (0, 0, 0)
 # Eventually these get read from the DS laptop
 matchActive = True
 currentTime = 160
-autonWinner = 'B'
 ourRobotColor = 'B'
+autonWinner = 'B'
 lastUpdateTick = time.monotonic()
+
+serial = usb_cdc.console
+
+def readAndUpdateData():
+    global ourRobotColor, autonWinner, currentTime, matchActive
+
+    if serial.in_waiting > 0:
+        line = serial.readline().decode('utf-8').strip()
+
+        if len(line) == 5:
+            ourRobotColor = line[0]
+            autonWinner = line[1]
+            currentTime = int(line[2:])
+
+    if currentTime > 0:
+        matchActive = True
+    else:
+        matchActive = False
 
 def getShiftTime():
     if currentTime > 140:
@@ -145,6 +164,7 @@ def rainbowWipe():
         pixels[x] = rainbowColorWheel((x * RAINBOW_DENSITY + offset) % 256)
 
 while True:
+    readAndUpdateData()
     if matchActive:
         currentTick = time.monotonic()
 
