@@ -99,7 +99,7 @@ def fade(firstColor, secondColor, progress):
 
 def rainbowColorWheel(seed):
     if seed < 0 or seed > 255:
-        seed = int(random.randrange(range(0,256)))
+        seed = int(random.randint(0, 255))
     
     if seed < 85:
         return (255 - seed * 3, seed * 3, 0)
