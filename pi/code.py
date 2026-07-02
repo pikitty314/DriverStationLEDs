@@ -7,7 +7,7 @@ import usb_cdc
 ## NOTE: Ticks refer to board time, time refers to match time
 
 # Constants
-BRIGHTNESS = 0.5
+BRIGHTNESS = 0.75
 
 CHASE_SPEED = 1
 CHASE_LENGTH = 10
@@ -16,7 +16,7 @@ RAINBOW_SPEED = 200
 RAINBOW_DENSITY = 10
 
 # Pixel strip
-pixels = neopixel.NeoPixel(board.GP0, 70, auto_write=False, brightness=BRIGHTNESS)
+pixels = neopixel.NeoPixel(board.GP0, 59, auto_write=False, brightness=BRIGHTNESS)
 
 # Colors
 BLUE = (0,0,100)
@@ -169,7 +169,7 @@ while True:
         currentTick = time.monotonic()
 
         if currentTick - lastUpdateTick >= 1:
-            currentTime -= 1
+            # currentTime -= 1
             lastUpdateTick = currentTick
 
             if currentTime <= 0:

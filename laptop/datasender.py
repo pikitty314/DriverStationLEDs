@@ -4,7 +4,7 @@ import serial
 
 LISTENER_NAME = "laptop-listener"
 TEAM_NUMBER = 1076
-IS_SIMULATION = False
+IS_SIMULATION = True
 
 PICO_PORT = "COM3"
 PICO_BAUDRATE = 115200
@@ -14,13 +14,14 @@ fms_table = None
 driverstation_subtable = None
 
 match_time_sub = None
+is_autonomous_sub = None
 is_red_sub = None
 auton_winner_sub = None
 
 serial_instance = None
 
 def init():
-    global nt_instance, serial_instance, fms_table, driverstation_subtable, match_time_sub, is_red_sub, auton_winner_sub
+    global nt_instance, serial_instance, fms_table, driverstation_subtable, match_time_sub, is_autonomous_sub, is_red_sub, auton_winner_sub
     nt_instance = ntcore.NetworkTableInstance.getDefault()
 
     if IS_SIMULATION:
@@ -37,7 +38,7 @@ def init():
     if not nt_instance.isConnected():
         raise ConnectionRefusedError("Unable to connect to NT4 client")
     
-    if not serial_instance.is_open():
+    if not serial_instance.is_open:
         raise ConnectionRefusedError(f"Unable to connect to Pi Pico on {PICO_PORT}")
 
     fms_table = nt_instance.getTable("FMSInfo")
@@ -45,7 +46,8 @@ def init():
 
     match_time_sub = driverstation_subtable.getDoubleTopic("MatchTime").subscribe(-1.0)
     is_red_sub = fms_table.getBooleanTopic("IsRedAlliance").subscribe(True)
-    auton_winner_sub = fms_table.getStringTopic("GameSpecificMessage").subscribe("")
+    is_autonomous_sub = driverstation_subtable.getBooleanTopic("Autonomous").subscribe(False)
+    auton_winner_sub = fms_table.getStringTopic("GameSpecificMessage").subscribe("A")
 
 def getSendableMessage():
     if not nt_instance.isConnected():
@@ -53,14 +55,19 @@ def getSendableMessage():
 
     match_time = match_time_sub.get()
     is_red = is_red_sub.get()
+    is_autonomous = is_autonomous_sub.get()
     auton_winner = auton_winner_sub.get()
+
+    if is_autonomous:
+        match_time = match_time + 140
+        auton_winner = "A"
     
-    return f"{'R' if is_red else 'B'}{auton_winner}{int(match_time) if match_time >= 0 else 0:03d}"
+    return f"{'R' if is_red else 'B'}{auton_winner if not is_autonomous else "A"}{int(match_time) if match_time >= 0 else 0:03d}"
 
 def sendData(data):
     global serial_instance
 
-    if not serial_instance.is_open():
+    if not serial_instance.is_open:
         raise ConnectionError(f"Pi Pico on {PICO_PORT} not connected")
     
     serial_instance.write(f"{data}\n".encode("UTF-8"))
@@ -78,6 +85,10 @@ while True:
             if nt_instance is not None:
                 nt_instance.stopClient()
                 nt_instance = None
+
+            if serial_instance is not None:
+                serial_instance.close()
+                serial_instance = None
 
             time.sleep(5.0) # Wait five seconds to try again
             continue
