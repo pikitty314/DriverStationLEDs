@@ -58,7 +58,7 @@ def getSendableMessage():
     is_autonomous = is_autonomous_sub.get()
     auton_winner = auton_winner_sub.get()
 
-    if is_autonomous:
+    if is_autonomous and int(match_time) > 0:
         match_time = match_time + 140
         auton_winner = "A"
     
@@ -95,7 +95,7 @@ while True:
     else:
         try:
             data = getSendableMessage()
-            print(data)
+            #print(data)
             sendData(data)
             time.sleep(0.5)
         except Exception as e:
