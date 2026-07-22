@@ -25,13 +25,14 @@ def init():
     global nt_instance, serial_instance, fms_table, driverstation_subtable, match_time_sub, is_autonomous_sub, is_red_sub, auton_winner_sub
     nt_instance = ntcore.NetworkTableInstance.getDefault()
 
+    nt_instance.startClient4(LISTENER_NAME)
+
     if IS_SIMULATION:
         nt_instance.setServer("localhost")
     else:
-        nt_instance.setServerTeam(TEAM_NUMBER)
+        nt_instance.startDSClient()
+        # nt_instance.setServerTeam(TEAM_NUMBER)
         # nt_instance.setServer(ROBOT_IP)
-
-    nt_instance.startClient4(LISTENER_NAME)
 
     serial_instance = serial.Serial(port=PICO_PORT, baudrate=PICO_BAUDRATE, timeout=1)
 
@@ -40,7 +41,7 @@ def init():
     if not nt_instance.isConnected():
         raise ConnectionRefusedError("Unable to connect to NT4 client")
     
-    if not serial_instance.is_open:
+    if serial_instance is None or not serial_instance.is_open:
         raise ConnectionRefusedError(f"Unable to connect to Pi Pico on {PICO_PORT}")
 
     fms_table = nt_instance.getTable("FMSInfo")
@@ -69,7 +70,7 @@ def getSendableMessage():
 def sendData(data):
     global serial_instance
 
-    if not serial_instance.is_open:
+    if serial_instance is None or not serial_instance.is_open:
         raise ConnectionError(f"Pi Pico on {PICO_PORT} not connected")
     
     serial_instance.write(f"{data}\n".encode("UTF-8"))

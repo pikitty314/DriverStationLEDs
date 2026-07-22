@@ -163,6 +163,8 @@ def rainbowWipe():
     for x in range(len(pixels)):
         pixels[x] = rainbowColorWheel((x * RAINBOW_DENSITY + offset) % 256)
 
+    pixels.show()
+
 while True:
     readAndUpdateData()
     if matchActive:
@@ -182,5 +184,6 @@ while True:
             updateStripStandard(getActiveHubColor(), getShiftTime())
 
     else:
-        pixels.fill(PURPLE)
-        pixels.show()
+        rainbowWipe()
+        #pixels.fill(PURPLE)
+        #pixels.show()
