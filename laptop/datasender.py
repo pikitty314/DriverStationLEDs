@@ -64,7 +64,7 @@ def getSendableMessage():
         match_time = match_time + 140
         auton_winner = "A"
     
-    return f"{'R' if is_red else 'B'}{auton_winner if not is_autonomous else "A"}{int(match_time) if match_time >= 0 else 0:03d}"
+    return f"{'R' if is_red else 'B'}{auton_winner if not is_autonomous else 'A'}{int(match_time) if match_time >= 0 else 0:03d}"
 
 def sendData(data):
     global serial_instance
@@ -82,7 +82,7 @@ while True:
             init()
             time.sleep(2.0)
         except Exception as e:
-            print(f"Intitialization failed: {e}, trying again.")
+            print(f"Initialization failed: {e}, trying again.")
 
             if nt_instance is not None:
                 nt_instance.stopClient()
