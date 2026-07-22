@@ -4,7 +4,8 @@ import serial
 
 LISTENER_NAME = "laptop-listener"
 TEAM_NUMBER = 1076
-IS_SIMULATION = True
+ROBOT_IP = "10.10.76.1"
+IS_SIMULATION = False
 
 PICO_PORT = "COM3"
 PICO_BAUDRATE = 115200
@@ -28,6 +29,7 @@ def init():
         nt_instance.setServer("localhost")
     else:
         nt_instance.setServerTeam(TEAM_NUMBER)
+        # nt_instance.setServer(ROBOT_IP)
 
     nt_instance.startClient4(LISTENER_NAME)
 
