@@ -166,8 +166,13 @@ def rainbowWipe():
     pixels.show()
 
 while True:
-    readAndUpdateData()
-    if matchActive:
+    successfullyReadData = True
+    try:
+        readAndUpdateData()
+    except:
+        successfullyReadData = False
+    
+    if matchActive and successfullyReadData:
         currentTick = time.monotonic()
 
         if currentTick - lastUpdateTick >= 1:
