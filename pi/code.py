@@ -166,21 +166,16 @@ def rainbowWipe():
     pixels.show()
 
 while True:
-    successfullyReadData = True
     try:
         readAndUpdateData()
+        lastUpdateTick = time.monotonic()
     except:
-        successfullyReadData = False
+        pass
     
-    if matchActive and successfullyReadData:
-        currentTick = time.monotonic()
-
-        if currentTick - lastUpdateTick >= 1:
-            # currentTime -= 1
-            lastUpdateTick = currentTick
-
-            if currentTime <= 0:
-                matchActive = False        
+    if matchActive and time.monotonic() - lastUpdateTick <= 3:        
+        if currentTime <= 0:
+            matchActive = False     
+        
         if currentTime > 140:
             updateStripRainbow(getShiftTime())
         elif currentTime > 130 and ourRobotColor == autonWinner:
